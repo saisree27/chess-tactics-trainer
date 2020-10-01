@@ -13,6 +13,9 @@ def home(request):
     else:
         return render(request=request, template_name="landing.html")
 
+def no_auth_home(request):
+    return render(request=request, template_name="home.html")
+
 def submit_login(request):
     print("here")
     error = ""

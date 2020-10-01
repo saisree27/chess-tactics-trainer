@@ -32,10 +32,10 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-        <form class="login100-form validate-form" method="post" action="/login">
+        <form class="login100-form validate-form" method="post" action="/login" autocomplete="off">
           {% csrf_token %}
 					<span class="login100-form-title p-b-26">
-						Login to the Trainer
+						Login to the <br>♜ Trainer ♜
 					</span>
 
 					<br/>
@@ -70,6 +70,14 @@
 
 						<a class="txt2" href="/register">
 							Register
+						</a>
+						
+						<span class="txt1">
+							<br>Back to the landing page
+						</span>
+
+						<a class="txt2" href="/">
+							→
 						</a>
 					</div>
 				</form>

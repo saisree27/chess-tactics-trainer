@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.home),
     path('login', views.submit_login),
     path('register', views.register),
+    path('try-without-account', views.no_auth_home),
     path('start-training', views.start_training),
     path('progress', views.progress),
     path('preferences', views.preferences),
