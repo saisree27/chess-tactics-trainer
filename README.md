@@ -6,5 +6,6 @@ This is a (WIP) personalized chess tactical training web application for profess
 
 In the design of the website, I have used two CSS templates (with some of my own modifications): one for the login/register screens, and one for  the landing page. As per the license, I am listing them below:
 
-Landing page: [Spatial]("https://templated.co/spatial")
-Login/Register pages: [Login v2]("https://colorlib.com/wp/template/login-form-v2/")
+Landing page: [Spatial](https://templated.co/spatial)
+
+Login/Register pages: [Login v2](https://colorlib.com/wp/template/login-form-v2/)
