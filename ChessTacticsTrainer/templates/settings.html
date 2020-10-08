@@ -1,0 +1,43 @@
+{% load static %}
+{% include 'navbar.html' %}
+
+<h1 style="margin-left: 10px">Settings</h1>
+
+<div style="margin-left: 10px">
+    <h2><br>Piece Type</h2>
+
+    <form action='/settings' method="post">
+      {% csrf_token %}
+      <select name="pieces" class="custom-select">
+        <option value="lichess">Lichess</option>
+        <option value="merida">Merida</option>
+        <option value="alpha">Alpha</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <p>{{ piece_change_error }}</p>
+    </form>
+
+    <h2><br>Change Password</h2>
+    <form action='/settings' method="POST">
+      {% csrf_token %}
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <label class="sr-only" for="inlineFormInputGroup">Name</label>
+          <input type="password" name="oldpass" class="form-control" id="oldPassword" placeholder="Old Password" value="">
+        </div>
+        <div class="col-auto">
+          <label class="sr-only" for="inlineFormInputGroup">Username</label>
+          <input type="password" name="newpass1" class="form-control" id="newPassword1" placeholder="New Password" value="">
+        </div>
+        <div class="col-auto">
+          <label class="sr-only" for="inlineFormInputGroup">Username</label>
+          <input type="password" name="newpass2" class="form-control" id="newPassword2" placeholder="Confirm New Password" value="">
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+      <p>{{ change_password_error }}</p>
+    </form>
+
+</div>

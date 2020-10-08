@@ -1,10 +1,15 @@
 from django import forms
 # from .forms import UploadFileForm
+from .models import Player
+from django.http import JsonResponse
+from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from stockfish import Stockfish
+import chess
 
 # Create your views here.
 def home(request):
@@ -14,7 +19,33 @@ def home(request):
         return render(request=request, template_name="landing.html")
 
 def no_auth_home(request):
-    return render(request=request, template_name="home.html")
+    return render(request=request, template_name="no_auth_home/home.html")
+
+def stockfish_reply(request):
+
+    stockfish = Stockfish('ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe')
+    stockfish.set_depth(20)
+
+    if request.is_ajax and request.method == "POST":
+        position = request.POST.get('position')
+        print(position)
+        stockfish.set_fen_position(position)
+        
+        board = chess.Board(position)
+
+        uci_move = stockfish.get_best_move()
+        board.push_uci(uci_move)
+
+        data = {
+            'new_position': board.fen(),
+            'move': uci_move
+        }
+        return JsonResponse(data)
+    else:
+        print("incorrect request")
+        return JsonResponse({})
+        
+
 
 def submit_login(request):
     print("here")
@@ -77,10 +108,61 @@ def submit_logout(request):
     return redirect("/login")
 
 def start_training(request):
-    return render(request=request, template_name="training.html")
+
+    player, _ = Player.objects.get_or_create(user=request.user)
+    piece_path = ""
+
+    print(player.piece_set)
+    if player.piece_set == "lichess":
+        piece_path = "/cburnett/{piece}.svg"
+        print(piece_path)
+    if player.piece_set == "merida":
+        piece_path = "/merida/{piece}.svg"
+        print(piece_path)
+    if player.piece_set == 'alpha':
+        piece_path = "/alpha/{piece}.svg"
+
+    context = {
+        "pieces": piece_path
+    }
+
+    return render(request=request, template_name="training.html", context=context)
 
 def progress(request):
     return render(request=request, template_name="progress.html")
 
-def preferences(request):
-    return render(request=request, template_name="preferences.html")
+def settings(request):
+    context = {"piece_change_error": "", "change_password_error": ""}
+    if request.method == "POST":
+        print(request.POST)
+        if request.POST.__contains__("pieces"):
+            player, _ = Player.objects.get_or_create(user=request.user)
+            print(player)
+            player.piece_set = request.POST.get("pieces")
+            print(player.piece_set)
+            player.save()
+            context["piece_change_error"] = "Piece set succesfully updated!"
+        if request.POST.__contains__("oldpass"):
+            # changing password
+            player, _ = Player.objects.get_or_create(user=request.user)
+            print(player)
+            if player.user.check_password(request.POST.get("oldpass")):
+                if request.POST.get("newpass1") == request.POST.get("newpass2"):
+                    # add check for whether password is good later
+                    context["change_password_error"] = "Changed password!"
+                    print("Changed password!")
+                    player.user.set_password(request.POST.get("newpass1"))
+                    player.user.save()
+                    player.save()
+                else:
+                    print("Your second confirmation is incorrect!")
+                    context["change_password_error"] = "Your confirmed password does not match your first one!"
+            else:
+                context["change_password_error"] = "Wrong old password!"
+                print("Wrong old password!")
+
+    return render(request=request, template_name="settings.html", context=context)
+
+def update_settings(request):
+    if request.method == "POST":
+        print(request.POST)

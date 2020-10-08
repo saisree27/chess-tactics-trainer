@@ -1,0 +1,119 @@
+{% load static %}
+{% include 'no_auth_home/navbar_no_auth.html' %}
+<h1>Training</h1>
+
+<link rel="stylesheet"
+href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+crossorigin="anonymous">
+
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+
+
+<body>
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div id="myBoard" style="width: 50%"></div>
+            <form class="login100-form">
+                <span class="login100-form-title">
+                    Chess (two player)
+                </span>
+                <div class="jumbotron jumbotron-fluid">
+                    <div class="container">
+                        <h3> Game Information </h3>
+                        <p id="status"></p>
+                        <p id="fen"></p>
+                        <p id="pgn"></p>
+                    </div>
+                </div>
+            </form>
+            <script>
+                var board = null;
+                var pos = 'start';
+                var game = new Chess();
+                var $status = $('#status');
+                var $fen = $('#fen');
+                var $pgn = $('#pgn');
+
+                function onDragStart (source, piece, position, orientation) {
+                    // do not pick up pieces if the game is over
+                    if (game.game_over()) return false;
+
+                    // only pick up pieces for the side to move
+                    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                            return false;
+                        }
+                }
+
+                function onDrop (source, target) {
+                    // see if the move is legal
+                    var move = game.move({
+                        from: source,
+                        to: target,
+                        promotion: 'q' // NOTE: always promote to a queen for example simplicity
+                    })
+
+                    // illegal move
+                    if (move === null) return 'snapback';
+
+                    updateStatus();
+                }
+
+                // update the board position after the piece snap
+                // for castling, en passant, pawn promotion
+                function onSnapEnd () {
+                    board.position(game.fen());
+                }
+
+                function updateStatus () {
+                    var status = '';
+
+                    var moveColor = 'White';
+                    if (game.turn() === 'b') {
+                        moveColor = 'Black';
+                    }
+
+                    // checkmate?
+                    if (game.in_checkmate()) {
+                        status = 'Game over, ' + moveColor + ' is in checkmate.';
+                    }
+
+                    // draw?
+                    else if (game.in_draw()) {
+                        status = 'Game over, drawn position';
+                    }
+
+                    // game still on
+                    else {
+                        status = moveColor + ' to move';
+
+                        // check?
+                        if (game.in_check()) {
+                            status += ', ' + moveColor + ' is in check';
+                        }
+                    }
+
+                    $status.html(status);
+                    $fen.html(game.fen());
+                    $pgn.html(game.pgn());
+                }
+
+                var config = {
+                    pieceTheme: '/static/img/chesspieces/lichess/{piece}.png',
+                    draggable: true,
+                    position: pos,
+                    onDragStart: onDragStart,
+                    onDrop: onDrop,
+                    onSnapEnd: onSnapEnd
+                }
+                board = Chessboard('myBoard', config);
+                $(window).resize(board.resize);
+                updateStatus();
+            </script>
+        </div>
+    </div>
+</body>

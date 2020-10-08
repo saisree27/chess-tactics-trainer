@@ -1,3 +1,261 @@
 {% load static %}
 {% include 'navbar.html' %}
-<h1>Training</h1>
+<h1 style="margin-left: 10px">Training</h1>
+
+<link rel="stylesheet"
+href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+crossorigin="anonymous">
+
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
+
+<style type="text/css">
+    .highlight-white {
+      background-color: rgba(0, 0, 255, 0.5);
+      box-shadow: inset 0 0 3px 3px blue;
+    }
+    .highlight-black {
+      background-color: rgba(0, 0, 255, 0.5);
+      box-shadow: inset 0 0 3px 3px blue;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        function getCookie(c_name) {
+            if(document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if(c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if(c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+
+        $(function () {
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            });
+        });
+    })
+</script>
+<body>
+    <div>
+        <div>
+            <div style="display: flex;">
+                <div id="myBoard" style="width: 40%; margin-left: 10px; margin-right: 20px"></div>
+                <div class="jumbotron jumbotron-fluid" style="flex-grow: 1">
+                    <div class="container">
+                        <h3> Game Information </h3>
+                        <p id="status"></p>
+                        <p id="fen"></p>
+                        <p id="pgn"></p>
+                        <div style="text-align: center;">
+                            <button class="btn btn-outline-primary" onclick="newGame()">New Game</button>
+                            <button id="switch" class="btn btn-outline-primary" onclick="switchColors()">Switch Colors</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                var board = null;
+                var $board = $('#myBoard')
+                var squareClass = 'square-55d63'
+                var pos = 'start';
+                var game = new Chess();
+                var $status = $('#status');
+                var $fen = $('#fen');
+                var $pgn = $('#pgn');
+                var whitePlayer = 'player';
+                var blackPlayer = 'stockfish';
+
+                function removeHighlights (color) {
+                    $board.find('.' + squareClass).removeClass('highlight-' + color)
+                }
+
+                
+                function newGame() {
+                    removeHighlights('white')
+                    removeHighlights('black')
+                    board.position('start');
+                    game = new Chess();
+                    updateStatus();
+                    if(whitePlayer == 'stockfish') {
+                        stockfishResponse();
+                    }
+                }
+
+                
+                function switchColors() {
+                    var temp = whitePlayer;
+                    whitePlayer = blackPlayer;
+                    blackPlayer = temp;
+
+                    if(blackPlayer === 'player') {
+                        board.orientation('black');
+                    } else board.orientation('white');
+
+                    if(game.turn() === 'b' && blackPlayer === 'stockfish') {
+                        stockfishResponse();
+                    }
+                    if(game.turn() === 'w' && whitePlayer === 'stockfish') {
+                        stockfishResponse();
+                    }
+                }
+
+                function onDragStart (source, piece, position, orientation) {
+                    // do not pick up pieces if the game is over
+                    if (game.game_over()) return false;
+
+                    console.log(game.turn());
+                    console.log(whitePlayer);
+                    console.log(blackPlayer);
+
+                    if (game.turn() === 'w' && whitePlayer === 'stockfish') return false;
+                    if (game.turn() === 'b' && blackPlayer === 'stockfish') return false;
+
+                    // only pick up pieces for the side to move
+                    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                        (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                            return false;
+                        }
+                }
+
+                function stockfishResponse() {
+                    message = { "position": game.fen() };
+                
+                    $.ajax({
+                        type: 'POST',
+                        url: "/make_move",
+                        data: message,
+                        success: function (response) {
+                            var move = game.move({
+                               from: response.move.substr(0, 2),
+                               to: response.move.substr(2, 4),
+                               promotion: response.move.substr(4)
+                            })
+
+                            if(move === null) {}
+                            else {
+                                board.position(game.fen());
+                                if(game.turn() == 'w') {
+                               //black just moved
+                                removeHighlights('black')
+                                removeHighlights('white')
+                                $board.find('.square-' + response.move.substr(0, 2)).addClass('highlight-black')
+                                $board.find('.square-' + response.move.substr(2, 4)).addClass('highlight-black')
+                                }
+                                else {
+                                    removeHighlights('black')
+                                    removeHighlights('white')
+                                    $board.find('.square-' + response.move.substr(0, 2)).addClass('highlight-white')
+                                    $board.find('.square-' + response.move.substr(2, 4)).addClass('highlight-white')
+                                }
+                                updateStatus();
+                            }
+                        }
+                    })
+                }
+
+                function onDrop (source, target) {
+                    // see if the move is legal
+                    var move = game.move({
+                        from: source,
+                        to: target,
+                        promotion: 'q' // NOTE: always promote to a queen for example simplicity
+                    })
+                                        
+                    // $board.find('.' + squareClass).removeClass('highlight-white')
+                    // $board.find('.square-' + move.from).addClass('highlight-white')
+                    // squareToHighlight = target
+                    // colorToHighlight = 'white'
+                    // illegal move
+                    if (move === null) return 'snapback';
+
+                    if(game.turn() == 'w') {
+                        //black just moved
+                        removeHighlights('black')
+                        removeHighlights('white')
+                        $board.find('.square-' + source).addClass('highlight-black')
+                        $board.find('.square-' + target).addClass('highlight-black')
+                    }
+                    else {
+                        removeHighlights('black')
+                        removeHighlights('white')
+                        $board.find('.square-' + source).addClass('highlight-white')
+                        $board.find('.square-' + target).addClass('highlight-white')
+                    }
+
+                    updateStatus();
+                    window.setTimeout(stockfishResponse, 250)
+                }
+
+                // update the board position after the piece snap
+                // for castling, en passant, pawn promotion
+                function onSnapEnd () {
+                    board.position(game.fen());
+                }
+
+                function updateStatus () {
+                    var status = '';
+
+                    var moveColor = 'White';
+                    if (game.turn() === 'b') {
+                        moveColor = 'Black';
+                    }
+
+                    // checkmate?
+                    if (game.in_checkmate()) {
+                        status = 'Game over, ' + moveColor + ' is in checkmate.';
+                        var $switchColors = $('#switch');
+                        $switchColors.prop("disabled", true);
+                    }
+
+                    // draw?
+                    else if (game.in_draw()) {
+                        status = 'Game over, drawn position';
+                    }
+
+                    // game still on
+                    else {
+                        
+                        var $switchColors = $('#switch');
+                        $switchColors.prop("disabled", false);
+
+                        status = moveColor + ' to move';
+
+                        // check?
+                        if (game.in_check()) {
+                            status += ', ' + moveColor + ' is in check';
+                        }
+                    }
+
+                    $status.html("<strong>Status: </strong>" + status);
+                    $fen.html("<strong>FEN: </strong>" + game.fen());
+                    $pgn.html("<strong>Moves: </strong>" + game.pgn());
+                }
+
+                var config = {
+                    pieceTheme: '/static/img/chesspieces/' + '{{ pieces }}',
+                    draggable: true,
+                    position: pos,
+                    onDragStart: onDragStart,
+                    onDrop: onDrop,
+                    onSnapEnd: onSnapEnd,
+                    orientation: 'white'
+                }
+                board = Chessboard('myBoard', config);
+                $(window).resize(board.resize);
+                updateStatus();
+            </script>
+        </div>
+    </div>
+</body>
