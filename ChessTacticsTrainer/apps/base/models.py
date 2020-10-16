@@ -6,5 +6,5 @@ class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     piece_set = models.CharField(verbose_name="Piece set", max_length=100, default="lichess")
     rating = models.FloatField(verbose_name="Tactics rating", default=1500)
-
+    darkmode = models.BooleanField(verbose_name="Dark mode", default=False)
     # will add more fields to this later

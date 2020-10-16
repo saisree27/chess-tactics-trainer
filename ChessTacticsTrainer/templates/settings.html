@@ -1,21 +1,26 @@
 {% load static %}
-{% include 'navbar.html' %}
+
+{% if darkmode == True %}
+  {% include 'navbardark.html' %}
+{% else %}
+  {% include 'navbar.html' %}
+{% endif %}
 
 <h1 style="margin-left: 10px">Settings</h1>
 
 <div style="margin-left: 10px">
     <h2><br>Piece Type</h2>
 
-    <form action='/settings' method="post">
+    <form class="form-inline" action='/settings' method="post">
       {% csrf_token %}
-      <select name="pieces" class="custom-select">
+      <select name="pieces" class="custom-select form-control" style="margin-right: 10px">
         <option value="lichess">Lichess</option>
         <option value="merida">Merida</option>
         <option value="alpha">Alpha</option>
       </select>
       <button type="submit" class="btn btn-primary">Submit</button>
-      <p>{{ piece_change_error }}</p>
     </form>
+    <p>{{ piece_change_error }}</p>
 
     <h2><br>Change Password</h2>
     <form action='/settings' method="POST">
@@ -40,4 +45,13 @@
       <p>{{ change_password_error }}</p>
     </form>
 
+    <h2><br>Dark Mode</h2>
+    <form class="form-inline" action='/settings' method="POST">
+      {% csrf_token %}
+      <div class="custom-control custom-switch" style="margin-right: 10px">
+        <input type="checkbox" name="darkmode" class="custom-control-input" id="darkmode">
+        <label class="custom-control-label" for="darkmode">Dark Mode</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>

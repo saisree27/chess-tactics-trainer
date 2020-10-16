@@ -1,5 +1,12 @@
 {% load static %}
-{% include 'navbar.html' %}
+
+{% if darkmode == True %}
+  {% include 'navbardark.html' %}
+{% else %}
+  {% include 'navbar.html' %}
+{% endif %}
+
+
 <h1 style="margin-left: 10px">Training</h1>
 
 <link rel="stylesheet"
@@ -12,6 +19,16 @@ integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5b
 crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
 
+{% if darkmode %}
+<style type="text/css">
+    .highlight-white {
+      background-color: rgb(107, 107, 221);
+    }
+    .highlight-black {
+      background-color: rgb(107, 107, 221);
+    }
+</style>
+{% else %}
 <style type="text/css">
     .highlight-white {
       background-color: rgba(0, 0, 255, 0.5);
@@ -22,6 +39,7 @@ crossorigin="anonymous"></script>
       box-shadow: inset 0 0 3px 3px blue;
     }
 </style>
+{% endif %}
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -50,9 +68,13 @@ crossorigin="anonymous"></script>
 <body>
     <div>
         <div>
-            <div style="display: flex;">
+            <div style="display: flex; height: 795px">
                 <div id="myBoard" style="width: 40%; margin-left: 10px; margin-right: 20px"></div>
-                <div class="jumbotron jumbotron-fluid" style="flex-grow: 1">
+                {% if darkmode %}
+                <div class="shadow-lg jumbotron jumbotron-fluid bg-dark text-white" style="flex-grow: 1; margin-right:10px">
+                {% else %}
+                <div class="shadow-lg jumbotron jumbotron-fluid" style="flex-grow: 1; margin-right:10px">
+                {% endif %}
                     <div class="container">
                         <h3> Game Information </h3>
                         <p id="status"></p>
@@ -61,6 +83,8 @@ crossorigin="anonymous"></script>
                         <div style="text-align: center;">
                             <button class="btn btn-outline-primary" onclick="newGame()">New Game</button>
                             <button id="switch" class="btn btn-outline-primary" onclick="switchColors()">Switch Colors</button>
+                            <button class="btn btn-outline-primary" onclick="changeRating(10)">Increase 10 pts</button>
+                            <button class="btn btn-outline-primary" onclick="changeRating(-10)">Decrease 10 pts</button>
                         </div>
                     </div>
                 </div>
@@ -79,6 +103,19 @@ crossorigin="anonymous"></script>
 
                 function removeHighlights (color) {
                     $board.find('.' + squareClass).removeClass('highlight-' + color)
+                }
+
+
+                function changeRating(value) {
+                    message = { "changeRating": value };
+                    $.ajax({
+                        type: 'POST',
+                        url: "/update",
+                        data: message,
+                        success: function (response) {
+                            console.log("Updated rating by " + value);
+                        }
+                    })
                 }
 
                 

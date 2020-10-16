@@ -14,7 +14,12 @@ import chess
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
-        return render(request=request, template_name="home.html")
+        player, _ = Player.objects.get_or_create(user=request.user)
+
+        context = {
+            "darkmode": player.darkmode
+        }
+        return render(request=request, template_name="home.html", context=context)
     else:
         return render(request=request, template_name="landing.html")
 
@@ -123,28 +128,43 @@ def start_training(request):
         piece_path = "/alpha/{piece}.svg"
 
     context = {
-        "pieces": piece_path
+        "pieces": piece_path,
+        "darkmode": player.darkmode
     }
 
     return render(request=request, template_name="training.html", context=context)
 
+def start_training_no_auth(request):
+
+    context = {
+        "pieces": "/merida/{piece}.svg"
+    }
+
+    return render(request=request, template_name="no_auth_home/training.html", context=context)
+
+
 def progress(request):
-    return render(request=request, template_name="progress.html")
+    player, _ = Player.objects.get_or_create(user=request.user)
+
+    context = {
+        "rating": player.rating,
+        "darkmode": player.darkmode
+    }
+
+    return render(request=request, template_name="progress.html", context=context)
 
 def settings(request):
-    context = {"piece_change_error": "", "change_password_error": ""}
+    player, _ = Player.objects.get_or_create(user=request.user)
+    context = {"piece_change_error": "", "change_password_error": "", "darkmode": player.darkmode }
     if request.method == "POST":
         print(request.POST)
         if request.POST.__contains__("pieces"):
-            player, _ = Player.objects.get_or_create(user=request.user)
             print(player)
             player.piece_set = request.POST.get("pieces")
             print(player.piece_set)
-            player.save()
             context["piece_change_error"] = "Piece set succesfully updated!"
-        if request.POST.__contains__("oldpass"):
+        elif request.POST.__contains__("oldpass"):
             # changing password
-            player, _ = Player.objects.get_or_create(user=request.user)
             print(player)
             if player.user.check_password(request.POST.get("oldpass")):
                 if request.POST.get("newpass1") == request.POST.get("newpass2"):
@@ -153,16 +173,26 @@ def settings(request):
                     print("Changed password!")
                     player.user.set_password(request.POST.get("newpass1"))
                     player.user.save()
-                    player.save()
                 else:
                     print("Your second confirmation is incorrect!")
                     context["change_password_error"] = "Your confirmed password does not match your first one!"
             else:
                 context["change_password_error"] = "Wrong old password!"
                 print("Wrong old password!")
-
+        elif 'darkmode' in request.POST:
+            player.darkmode = True
+            print(player.darkmode)
+        else:
+            player.darkmode = False
+            print(player.darkmode)
+    player.save()
     return render(request=request, template_name="settings.html", context=context)
 
-def update_settings(request):
+def update(request):
     if request.method == "POST":
-        print(request.POST)
+        if "changeRating" in request.POST:
+            rating_diff = int(request.POST.get("changeRating"))
+            player, _ = Player.objects.get_or_create(user=request.user)
+            player.rating += rating_diff
+            player.save()
+    return JsonResponse({})

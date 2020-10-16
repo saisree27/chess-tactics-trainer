@@ -13,11 +13,29 @@
     src: url('../font/poppins/Poppins-SemiBold.ttf'); 
 }
 
-body, html {
-	height: 100%;
+body {
+    height: 100%;
+    background-color: #131313;
 }
 
-nav {
+p, label, button, input, select, canvas {
     font-family: Poppins-Regular;
-    background-image: linear-gradient(#d2d9db, #d2d9db);
+}
+
+p, label {
+    color: white;
+}
+
+.form-control:valid {
+    background-color:  black!important;
+    color:white;
+}
+
+h1, h2, h3, h4 {
+    font-family: Poppins-SemiBold;
+    color: white;
+}
+
+strong {
+    font-family: Poppins-Bold;
 }

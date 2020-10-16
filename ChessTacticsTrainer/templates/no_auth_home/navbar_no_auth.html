@@ -1,6 +1,7 @@
 {% load static %}
 
 {% include 'base.html' %}
+{% static 'css/home.css' %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
 
@@ -16,10 +17,10 @@
             <a class="nav-link" href="/">Home</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/start-training">Start Training</a>
+            <a class="nav-link" href="/start-training-no-auth">Start Training</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/progress">Your Progress</a>
+            <a class="nav-link" href="/progress_no_auth">Your Progress</a>
         </li>
         <!-- <li class="nav-item">
             <a class="nav-link" href="/about">About</a>

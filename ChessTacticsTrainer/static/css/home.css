@@ -13,11 +13,20 @@
     src: url('../font/poppins/Poppins-SemiBold.ttf'); 
 }
 
-body, html {
-	height: 100%;
+body {
+    height: 100%;
+    background-color: #d2d9db;
+    /* background: radial-gradient(80% 40%, #8c838d, white); */
 }
 
-nav {
+p, button, input, select, canvas {
     font-family: Poppins-Regular;
-    background-image: linear-gradient(#d2d9db, #d2d9db);
+}
+
+h1, h2, h3, h4 {
+    font-family: Poppins-SemiBold;
+}
+
+strong {
+    font-family: Poppins-Bold;
 }
