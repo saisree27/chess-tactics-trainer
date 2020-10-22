@@ -1,5 +1,4 @@
 from django import forms
-# from .forms import UploadFileForm
 from .models import Player
 from django.http import JsonResponse
 from django.core import serializers
@@ -7,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, get_user_model
+from django.contrib.auth.password_validation import validate_password, ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from stockfish import Stockfish
 import chess
@@ -27,7 +27,6 @@ def no_auth_home(request):
     return render(request=request, template_name="no_auth_home/home.html")
 
 def stockfish_reply(request):
-
     stockfish = Stockfish('ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe')
     stockfish.set_depth(20)
 
@@ -169,10 +168,16 @@ def settings(request):
             if player.user.check_password(request.POST.get("oldpass")):
                 if request.POST.get("newpass1") == request.POST.get("newpass2"):
                     # add check for whether password is good later
-                    context["change_password_error"] = "Changed password!"
-                    print("Changed password!")
-                    player.user.set_password(request.POST.get("newpass1"))
-                    player.user.save()
+                    try:
+                        validate_password(request.POST.get("newpass1"))
+                        context["change_password_error"] = "Changed password!"
+                        print("Changed password!")
+                        player.user.set_password(request.POST.get("newpass1"))
+                        player.user.save()
+                    except ValidationError as e:
+                        print(e)
+                        print(e.error_list[0])
+                        context["change_password_error"] = e.error_list[0]
                 else:
                     print("Your second confirmation is incorrect!")
                     context["change_password_error"] = "Your confirmed password does not match your first one!"

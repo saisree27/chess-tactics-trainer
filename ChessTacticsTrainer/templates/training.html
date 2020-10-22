@@ -101,7 +101,7 @@ crossorigin="anonymous"></script>
                 var whitePlayer = 'player';
                 var blackPlayer = 'stockfish';
 
-                function removeHighlights (color) {
+                function removeHighlights(color) {
                     $board.find('.' + squareClass).removeClass('highlight-' + color)
                 }
 
@@ -148,7 +148,7 @@ crossorigin="anonymous"></script>
                     }
                 }
 
-                function onDragStart (source, piece, position, orientation) {
+                function onDragStart(source, piece, position, orientation) {
                     // do not pick up pieces if the game is over
                     if (game.game_over()) return false;
 
@@ -202,7 +202,7 @@ crossorigin="anonymous"></script>
                     })
                 }
 
-                function onDrop (source, target) {
+                function onDrop(source, target) {
                     // see if the move is legal
                     var move = game.move({
                         from: source,
@@ -237,11 +237,11 @@ crossorigin="anonymous"></script>
 
                 // update the board position after the piece snap
                 // for castling, en passant, pawn promotion
-                function onSnapEnd () {
+                function onSnapEnd() {
                     board.position(game.fen());
                 }
 
-                function updateStatus () {
+                function updateStatus() {
                     var status = '';
 
                     var moveColor = 'White';
