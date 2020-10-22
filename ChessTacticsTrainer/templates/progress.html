@@ -26,7 +26,12 @@
 
     <h4> <br><br><br><br><br><br><br><br><br><br><br><br><br> Training History </h4>
     
-    <table class="table table-bordered table-striped table-dark" style="margin-right: 20px;">
+
+    {% if darkmode == True %}
+        <table class="table table-bordered table-striped table-dark" style="margin-right: 20px;">
+    {% else %}
+        <table class="table table-bordered table-striped" style="margin-right: 20px;">
+    {% endif %}
         <thead>
             <tr>
                 <th scope="col">Time Started</th>
@@ -50,12 +55,15 @@
         ctx.canvas.width = 300;
         ctx.canvas.height = 300;
     
+        var tactics_correct = parseInt("{{ tactics_correct }}")
+        var tactics_incorrect = parseInt("{{ tactics_incorrect }}")
+
         data = {
             labels: ["Correct", "Incorrect"],
             datasets: [{
-                label: "Population (millions)",
+                label: "Tactical Puzzles",
                 backgroundColor: ["green", "red"],
-                data: [500,400]
+                data: [ tactics_correct, tactics_incorrect ]
             }]
         }
         

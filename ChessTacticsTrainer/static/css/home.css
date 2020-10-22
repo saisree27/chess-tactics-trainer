@@ -19,7 +19,7 @@ body {
     /* background: radial-gradient(80% 40%, #8c838d, white); */
 }
 
-p, button, input, select, canvas {
+p, button, a, table, input, select, canvas {
     font-family: Poppins-Regular;
 }
 

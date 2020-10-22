@@ -85,6 +85,8 @@ crossorigin="anonymous"></script>
                             <button id="switch" class="btn btn-outline-primary" onclick="switchColors()">Switch Colors</button>
                             <button class="btn btn-outline-primary" onclick="changeRating(10)">Increase 10 pts</button>
                             <button class="btn btn-outline-primary" onclick="changeRating(-10)">Decrease 10 pts</button>
+                            <button class="btn btn-outline-primary" onclick="updateTacticRecords(1)">Got tactic right</button>
+                            <button class="btn btn-outline-primary" onclick="updateTacticRecords(-1)">Got tactic wrong</button>
                         </div>
                     </div>
                 </div>
@@ -117,7 +119,18 @@ crossorigin="anonymous"></script>
                         }
                     })
                 }
-
+                
+                function updateTacticRecords(value) {
+                    message = { "changeTacticsCorrect": value };
+                    $.ajax({
+                        type: 'POST',
+                        url: "/update",
+                        data: message,
+                        success: function (response) {
+                            console.log("Updated tactic record by " + value);
+                        }
+                    })
+                }
                 
                 function newGame() {
                     removeHighlights('white')

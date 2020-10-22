@@ -14,9 +14,19 @@
     <form class="form-inline" action='/settings' method="post">
       {% csrf_token %}
       <select name="pieces" class="custom-select form-control" style="margin-right: 10px">
-        <option value="lichess">Lichess</option>
-        <option value="merida">Merida</option>
-        <option value="alpha">Alpha</option>
+        {% if piece_option == 'lichess' %}
+          <option value="lichess" selected>Lichess</option>
+          <option value="merida">Merida</option>
+          <option value="alpha">Alpha</option>
+        {% elif piece_option == 'merida' %}
+          <option value="lichess">Lichess</option>
+          <option value="merida" selected>Merida</option>
+          <option value="alpha">Alpha</option>
+        {% else %}
+          <option value="lichess">Lichess</option>
+          <option value="merida">Merida</option>
+          <option value="alpha" selected>Alpha</option>
+        {% endif %}
       </select>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>

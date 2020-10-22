@@ -27,7 +27,8 @@ def no_auth_home(request):
     return render(request=request, template_name="no_auth_home/home.html")
 
 def stockfish_reply(request):
-    stockfish = Stockfish('ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe')
+    # change to Linux binary if on Linux OS
+    stockfish = Stockfish('ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2')
     stockfish.set_depth(20)
 
     if request.is_ajax and request.method == "POST":
@@ -147,14 +148,22 @@ def progress(request):
 
     context = {
         "rating": player.rating,
-        "darkmode": player.darkmode
+        "darkmode": player.darkmode,
+        "tactics_correct": player.total_tactics_correct,
+        "tactics_incorrect": player.total_tactics_incorrect
     }
 
     return render(request=request, template_name="progress.html", context=context)
 
 def settings(request):
     player, _ = Player.objects.get_or_create(user=request.user)
-    context = {"piece_change_error": "", "change_password_error": "", "darkmode": player.darkmode }
+    context = {
+        "piece_change_error": "", 
+        "change_password_error": "", 
+        "darkmode": player.darkmode,
+
+        "piece_option": player.piece_set 
+    }
     if request.method == "POST":
         print(request.POST)
         if request.POST.__contains__("pieces"):
@@ -162,6 +171,7 @@ def settings(request):
             player.piece_set = request.POST.get("pieces")
             print(player.piece_set)
             context["piece_change_error"] = "Piece set succesfully updated!"
+            context["piece_option"] = request.POST.get("pieces")
         elif request.POST.__contains__("oldpass"):
             # changing password
             print(player)
@@ -187,9 +197,13 @@ def settings(request):
         elif 'darkmode' in request.POST:
             player.darkmode = True
             print(player.darkmode)
+            player.save()
+            return redirect('/settings')
         else:
+            # if there is no parameter, assume it's turning off dark mode
             player.darkmode = False
-            print(player.darkmode)
+            player.save()
+            return redirect('/settings')
     player.save()
     return render(request=request, template_name="settings.html", context=context)
 
@@ -199,5 +213,13 @@ def update(request):
             rating_diff = int(request.POST.get("changeRating"))
             player, _ = Player.objects.get_or_create(user=request.user)
             player.rating += rating_diff
+            player.save()
+        if "changeTacticsCorrect" in request.POST:
+            tactic_diff = int(request.POST.get("changeTacticsCorrect"))
+            player, _ = Player.objects.get_or_create(user=request.user)
+            if tactic_diff > 0:
+                player.total_tactics_correct += 1
+            else:
+                player.total_tactics_incorrect += 1
             player.save()
     return JsonResponse({})
