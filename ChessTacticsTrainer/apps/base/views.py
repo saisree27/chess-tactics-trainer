@@ -10,7 +10,12 @@ from django.contrib.auth.password_validation import validate_password, Validatio
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from stockfish import Stockfish
 import chess
+import pickle
+import random
 
+tactics_dict = {}
+with open('ChessTacticsTrainer/static/assets/best_so_far_gen_july_2019.obj', 'rb') as f:
+    tactics_dict = pickle.load(f)
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
@@ -50,7 +55,43 @@ def stockfish_reply(request):
         print("incorrect request")
         return JsonResponse({})
         
+def send_tactic(request):
+    if request.is_ajax and request.method == "POST":
+        tactic = random.choice(list(tactics_dict.values()))
+        data = {
+            'tactic': {
+                'turn': tactic[0].turn,
+                'fen': tactic[1],
+                'bestmove': tactic[4],
+                'variation': tactic[5]
+            }
+        }
+        print("sent tactic")
+        return JsonResponse(data)
+    else:
+        print("incorrect request")
+        return JsonResponse({})
 
+def play_engine(request):
+    player, _ = Player.objects.get_or_create(user=request.user)
+    piece_path = ""
+
+    print(player.piece_set)
+    if player.piece_set == "lichess":
+        piece_path = "/cburnett/{piece}.svg"
+        print(piece_path)
+    if player.piece_set == "merida":
+        piece_path = "/merida/{piece}.svg"
+        print(piece_path)
+    if player.piece_set == 'alpha':
+        piece_path = "/alpha/{piece}.svg"
+
+    context = {
+        "pieces": piece_path,
+        "darkmode": player.darkmode
+    }
+
+    return render(request=request, template_name="play_engine.html", context=context)
 
 def submit_login(request):
     print("here")
