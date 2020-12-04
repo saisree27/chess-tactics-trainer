@@ -13,14 +13,28 @@ var constantVariation = '';
 var curIndex = 0;
 var tempIndex = 0;
 var curTactic = '';
+var timerVar;
+var totalSeconds = 0;
+
 
 function getTactic() {
     var message = document.getElementById('message');
     if(message != null) {
         document.getElementById('message').remove();
     }
-    document.getElementById('start').innerHTML = "Next tactic"
+
+    document.getElementById("start").classList.remove('btn-outline-success');
+    document.getElementById("start").classList.remove('btn-outline-danger');
+    document.getElementById("start").classList.add('btn-outline-primary');
+
+    document.getElementById('start').innerHTML = "Find the best move"
     document.getElementById('start').setAttribute('disabled', 'true');
+
+    $("#begin").attr('disabled', 'disabled');
+    $("#lastmove").attr('disabled', 'disabled');
+    $("#nextmove").attr('disabled', 'disabled');
+    $("#end").attr('disabled', 'disabled');
+    
     message = { "getTactic": true };
     $.ajax({
         type: 'POST',
@@ -49,6 +63,8 @@ function displayTactic(tactic) {
     curTactic = tactic;
 
     updateStatus();
+    totalSeconds = 0;
+    timerVar = setInterval(countTimer, 1000);
 }
 
 function removeHighlights(color) {
@@ -98,6 +114,20 @@ function onDragStart(source, piece, position, orientation) {
     
     return false;
 }
+
+function countTimer() {
+    ++totalSeconds;
+    var hour = Math.floor(totalSeconds /3600);
+    var minute = Math.floor((totalSeconds - hour*3600)/60);
+    var seconds = totalSeconds - (hour*3600 + minute*60);
+    if(hour < 10)
+      hour = "0"+hour;
+    if(minute < 10)
+      minute = "0"+minute;
+    if(seconds < 10)
+      seconds = "0"+seconds;
+    document.getElementById("timer").innerHTML = "<strong>Time Spent: </strong>" + hour + ":" + minute + ":" + seconds;
+ }
 
 function begin() {
     removeHighlights('black')
@@ -194,6 +224,23 @@ function nextmove() {
     console.log("End Current Index " + curIndex);
 }
 
+function end() {
+    removeHighlights('black');
+    removeHighlights('white');
+
+    while(tempIndex != curIndex) {
+        nextmove();
+    }
+
+    updateStatus();
+    board.position(game.fen());
+    document.getElementById('nextmove').removeAttribute('disabled');
+    document.getElementById('end').removeAttribute('disabled');
+    $("#nextmove").attr('disabled', 'disabled');
+    $("#end").attr('disabled', 'disabled');
+}
+
+
 function respond() {
     var move = game.move({
         from: variation[0].substr(0, 2),
@@ -267,31 +314,25 @@ function onDrop(source, target) {
         //correc
         variation = variation.slice(1, variation.length)
         if(variation.length > 0) {
-            var div = document.createElement('div');
-            div.setAttribute('role', 'alert');
-            div.id = "message";
-            div.className = "alert alert-success"
-            div.innerHTML = 'Correct move! Keep going...'
-            document.getElementById('info').appendChild(div)
+            document.getElementById('start').innerHTML = "Correct! Keep going!";
+            document.getElementById("start").classList.remove('btn-outline-primary');
+            document.getElementById("start").classList.add('btn-outline-success');
             window.setTimeout(respond, 250)
         } else {
-            var div = document.createElement('div');
-            div.id = "message";
-            div.setAttribute('role', 'alert');
-            div.className = "alert alert-success"
-            div.innerHTML = 'Puzzle Solved!'
-            document.getElementById('info').appendChild(div)
+            document.getElementById('start').innerHTML = "Puzzle Solved! <strong>|</strong> Continue Solving";
+            document.getElementById("start").classList.remove('btn-outline-primary');
+            document.getElementById("start").classList.add('btn-outline-success');
             document.getElementById('start').removeAttribute('disabled');
+            clearInterval(timerVar);
         }
     } else {
-        var div = document.createElement('div');
-        div.setAttribute('role', 'alert');
-        div.id = "message";
-        div.className = "alert alert-danger";
-        div.innerHTML = 'Incorrect move.';
-        document.getElementById('info').appendChild(div);
+        document.getElementById("start").classList.remove('btn-outline-primary');
+        document.getElementById("start").classList.add('btn-outline-success');
+        document.getElementById("start").classList.add('btn-outline-danger');
+        document.getElementById('start').innerHTML = "Incorrect move. <strong>|</strong> Continue Solving"
         document.getElementById('start').removeAttribute('disabled');
         curIndex = constantVariation.length - 1;
+        clearInterval(timerVar);
     }
     updateStatus();
 }
@@ -338,7 +379,7 @@ function updateStatus() {
 
     $status.html("<strong>Status: </strong>" + status);
     $fen.html("<strong>FEN: </strong>" + game.fen());
-    $pgn.html("<strong>Moves: </strong>" + game.pgn());
+    $pgn.html("<strong>Moves: </strong>" + game.pgn().substr(game.pgn().lastIndexOf(']') + 1));
 }
 
 var config = {

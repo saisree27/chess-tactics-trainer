@@ -76,7 +76,7 @@ crossorigin="anonymous"></script>
                         <button id="begin" class="btn btn-primary" style="margin-top: 10px"  disabled onClick="begin()"><<</button>
                         <button id="lastmove" class="btn btn-primary" style="margin-top: 10px" disabled onClick="lastmove()"><</button>
                         <button id="nextmove" class="btn btn-primary" style="margin-top: 10px" disabled onClick="nextmove()">></button>
-                        <button id="end" class="btn btn-primary" style="margin-top: 10px" disabled>>></button>
+                        <button id="end" class="btn btn-primary" style="margin-top: 10px" disabled onClick="end()">>></button>
                     </div>
                 </div>
                 
@@ -86,13 +86,14 @@ crossorigin="anonymous"></script>
                 {% else %}
                 <div class="shadow-lg jumbotron jumbotron-fluid" style="flex-grow: 1; margin-right:10px">
                 {% endif %}
-                    <div id="info" class="container">
+                    <div id="info" class="container" style="font-size: 20px; position:absolute;">
                         <h3> Game Information </h3>
                         <p id="status"></p>
                         <p id="fen"></p>
                         <p id="pgn"></p>
-                        <div style="text-align: center;">
-                            <button id="start" class="btn btn-outline-primary" onclick="getTactic()">Start Solving</button>
+                        <p id="timer"><strong>Time Spent: </strong>00:00:00</p>
+                        <div style="position: absolute; text-align: center; left: 0%; right: 0%; bottom:-425px;">
+                            <button id="start" class="btn btn-outline-primary" onclick="getTactic()" style="font-size: 50px; vertical-align: bottom;">Start Solving</button>
                         </div>
                         <br>
                     </div>
