@@ -1,3 +1,32 @@
 {% load static %}
-{% include 'no_auth_home/navbar_no_auth.html' %}
-<h1>Home</h1>
+
+{% if darkmode == True %}
+  {% include 'navbardark.html' %}
+{% else %}
+  {% include 'no_auth_home/navbar_no_auth.html' %}
+{% endif %}
+
+
+{% if darkmode == True %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/homepagedark.css' %}">
+{% else %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/homepage.css' %}">
+{% endif %}
+
+<div id="background" style="height: 100%">
+    <div id="verticalcenter">
+        {% if darkmode %}
+        <div class="shadow-lg jumbotron jumbotron-fluid bg-dark text-white" style="flex-grow: 1; margin-right:10px; border-radius: 15px ;">
+        {% else %}
+        <div class="shadow-lg jumbotron jumbotron-fluid" style="flex-grow: 1; margin-right:10px; border-radius: 15px ;">
+        {% endif %}
+            <div class="container">
+                <h1> Welcome to the Chess Tactics Trainer! </h1>
+                <div style="text-align: center;">
+                    <a href="/start-training-no-auth" class="btn btn-lg btn-outline-primary"> Try it out! </a>
+                    <a href="/register" class="btn btn-lg btn-outline-primary"> Register </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

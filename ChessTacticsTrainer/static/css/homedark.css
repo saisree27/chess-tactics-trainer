@@ -18,12 +18,16 @@ body {
     background-color: #131313;
 }
 
-p, label, button, input, select, canvas {
+p, button, a, table, input, select, canvas {
     font-family: Poppins-Regular;
 }
 
-p, label {
-    color: white;
+h1, h2, h3, h4 {
+    font-family: Poppins-SemiBold;
+}
+
+strong {
+    font-family: Poppins-Bold;
 }
 
 .form-control:valid {

@@ -92,7 +92,11 @@ crossorigin="anonymous"></script>
                         <p id="fen"></p>
                         <p id="pgn"></p>
                         <p id="timer"><strong>Time Spent: </strong>00:00:00</p>
-                        <div style="position: absolute; text-align: center; left: 0%; right: 0%; bottom:-425px;">
+                        <div style="text-align: center;">
+                            <iframe id="analysis_board" width="500px" height="300px" style="border:none;"></iframe>
+                        </div>
+                        <div style="position: absolute; text-align: center; left: 0%; right: 0%; bottom:-100px;">
+                            
                             <button id="start" class="btn btn-outline-primary" onclick="getTactic()" style="font-size: 50px; vertical-align: bottom;">Start Solving</button>
                         </div>
                         <br>

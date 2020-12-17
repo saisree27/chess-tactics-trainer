@@ -75,18 +75,14 @@ crossorigin="anonymous"></script>
                 {% else %}
                 <div class="shadow-lg jumbotron jumbotron-fluid" style="flex-grow: 1; margin-right:10px">
                 {% endif %}
-                    <div class="container">
+                    <div id="info" class="container" style="font-size: 20px; position:absolute;">
                         <h3> Game Information </h3>
                         <p id="status"></p>
                         <p id="fen"></p>
                         <p id="pgn"></p>
-                        <div style="text-align: center;">
-                            <button class="btn btn-outline-primary" onclick="newGame()">New Game</button>
-                            <button id="switch" class="btn btn-outline-primary" onclick="switchColors()">Switch Colors</button>
-                            <button class="btn btn-outline-primary" onclick="changeRating(10)">Increase 10 pts</button>
-                            <button class="btn btn-outline-primary" onclick="changeRating(-10)">Decrease 10 pts</button>
-                            <button class="btn btn-outline-primary" onclick="updateTacticRecords(1)">Got tactic right</button>
-                            <button class="btn btn-outline-primary" onclick="updateTacticRecords(-1)">Got tactic wrong</button>
+                        <div style="position: absolute; text-align: center; left: 0%; right: 0%; bottom:-475px;">
+                            <button class="btn btn-outline-primary" onclick="newGame()" style="font-size: 50px; vertical-align: bottom;">New Game</button>
+                            <button id="switch" class="btn btn-outline-primary" onclick="switchColors()" style="font-size: 50px; vertical-align: bottom;">Switch Colors</button>
                         </div>
                     </div>
                 </div>

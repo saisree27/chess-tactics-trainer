@@ -15,7 +15,7 @@ var tempIndex = 0;
 var curTactic = '';
 var timerVar;
 var totalSeconds = 0;
-
+var originalFEN = '';
 
 function getTactic() {
     var message = document.getElementById('message');
@@ -55,7 +55,9 @@ function displayTactic(tactic) {
     } else {
         board.orientation('black');
     }
-    board.position(game.fen())
+    $("#analysis_board").attr('src', '');
+    board.position(game.fen());
+    originalFEN = game.fen();
     variation = tactic.variation;
     constantVariation = JSON.parse(JSON.stringify(tactic.variation));
     curIndex = -1; // no moves made yet in the variation
@@ -323,6 +325,7 @@ function onDrop(source, target) {
             document.getElementById("start").classList.remove('btn-outline-primary');
             document.getElementById("start").classList.add('btn-outline-success');
             document.getElementById('start').removeAttribute('disabled');
+            $("#analysis_board").attr('src', 'https://lichess.org/analysis/standard/' + originalFEN);
             clearInterval(timerVar);
         }
     } else {
@@ -331,6 +334,7 @@ function onDrop(source, target) {
         document.getElementById("start").classList.add('btn-outline-danger');
         document.getElementById('start').innerHTML = "Incorrect move. <strong>|</strong> Continue Solving"
         document.getElementById('start').removeAttribute('disabled');
+        $("#analysis_board").attr('src', 'https://lichess.org/analysis/standard/' + originalFEN);
         curIndex = constantVariation.length - 1;
         clearInterval(timerVar);
     }
