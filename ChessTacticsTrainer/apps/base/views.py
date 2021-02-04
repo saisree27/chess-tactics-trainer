@@ -14,7 +14,7 @@ import pickle
 import random
 
 tactics_dict = {}
-with open('ChessTacticsTrainer/static/assets/best_so_far_gen_july_2019.obj', 'rb') as f:
+with open('ChessTacticsTrainer/static/assets/trying_again_july_2019.obj', 'rb') as f:
     tactics_dict = pickle.load(f)
 # Create your views here.
 def home(request):
