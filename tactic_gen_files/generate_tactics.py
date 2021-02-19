@@ -6,7 +6,7 @@ from stockfish import Stockfish
 import logic
 
 sf = Stockfish('../ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe')
-sf.set_depth(15)
+sf.set_depth(11)
 
 list_of_tactics = dict()
 
@@ -14,17 +14,19 @@ list_of_tactics = dict()
 # pgn = open("lichess_pgn_2018.05.24_Garry_Kasparov_( )_vs_Neil_R_McDonald_( ).DLS8u6IJ.pgn")
 # pgn = open("lichess_pgn_2017.09.01_Donald_Byrne_( )_vs_Robert_James_Fischer_( ).ZAMs9lOM.pgn")
 # pgn = open("lichess_pgn_2015.07.14_Carlos_Torre_Repetto_( )_vs_Emanuel_Lasker_( ).RVXmQ4Y5.pgn")
-pgn = open("lichess_pgn_2020.12.28_Alexander_Alekhine_( )_vs_A_Fletcher_( ).I00FfPhr.pgn")
-# pgn = open("lichess_db_standard_rated_2016-07.pgn")
+# pgn = open("lichess_pgn_2019.06.22_Bogdan_Sliwa_( )_vs_Gosta_Stoltz_( ).nrf1xS9a.pgn")
+# pgn = open("lichess_pgn_2021.02.09_Peter_Leko_vs_Evgeny_Ilgizovich_Bareev.pMR6AX07.pgn")
+# pgn = open("lichess_pgn_2021.02.11_Svetozar_Gligoric_vs_Fridrik_Olafsson.igdANJU7.pgn")
+pgn = open("lichess_db_standard_rated_2019-07.pgn")
 
 
 game = chess.pgn.read_game(pgn)
 num_games = 0
 
 while game is not None:
-    print("here")
+    # print("here")
     num_games += 1
-    # print("Game %s" % (num_games))
+    print("Game %s" % (num_games), end="\r")
     board = game.board()
     running_eval = 30
 
@@ -38,9 +40,9 @@ while game is not None:
             break
 
         if logic.puzzle(running_eval, new_eval):
-            print('got_puzzle')
+            # print('got_puzzle')
             has_best = logic.check_for_best_move(board)
-            print(has_best)
+            # print(has_best)
             if has_best:
                 temp = game.board()
 
@@ -83,12 +85,12 @@ while game is not None:
     # print(num_games)
     # print("NUMBER OF TACTICS GENERATED: %s" % len(list_of_tactics))
 
-    if num_games % 1 == 0:
-        print("Processed %s games." % num_games)
-        print("NUMBER OF TACTICS GENERATED: %s" % len(list_of_tactics))
-        print("Dumping to pickle")
-        handler = open('windmill_example.obj', 'wb')
-        print(list_of_tactics)
+    if num_games % 100 == 0:
+        # print("Processed %s games." % num_games)
+        print("NUMBER OF TACTICS GENERATED: %s" % len(list_of_tactics), end="\r")
+        # print("Dumping to pickle")
+        handler = open('JULY 2019 FINAL (TO BE CLASSIFIED).obj', 'wb')
+        # print(list_of_tactics)
         pickle.dump(list_of_tactics, handler)
         handler.close()
-        print("Done.")
+        # print("Done.")

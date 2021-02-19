@@ -13,6 +13,7 @@ var constantVariation = '';
 var curIndex = 0;
 var tempIndex = 0;
 var curTactic = '';
+var classifications = '';
 var timerVar;
 var totalSeconds = 0;
 var originalFEN = '';
@@ -60,6 +61,8 @@ function displayTactic(tactic) {
     originalFEN = game.fen();
     variation = tactic.variation;
     constantVariation = JSON.parse(JSON.stringify(tactic.variation));
+    classifications = tactic.classifications;
+    document.getElementById("classifications").style.visibility = "hidden"
     curIndex = -1; // no moves made yet in the variation
     tempIndex = -1; // no moves made yet in the variation
     curTactic = tactic;
@@ -326,6 +329,16 @@ function onDrop(source, target) {
             document.getElementById("start").classList.add('btn-outline-success');
             document.getElementById('start').removeAttribute('disabled');
             $("#analysis_board").attr('src', 'https://lichess.org/analysis/standard/' + originalFEN);
+            console.log("Classifications");
+            console.log(classifications);
+            var classificationString = "";
+            classifications.map((x) => {
+                classificationString = classificationString.concat("<span class='badge badge-primary'>" + x + "</span> <span> </span>")
+                console.log(classificationString)
+            })
+            console.log(classificationString)
+            document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span class='badge badge-primary'>+</span>";
+            document.getElementById("classifications").style.visibility = "visible"
             clearInterval(timerVar);
         }
     } else {
@@ -336,6 +349,14 @@ function onDrop(source, target) {
         document.getElementById('start').removeAttribute('disabled');
         $("#analysis_board").attr('src', 'https://lichess.org/analysis/standard/' + originalFEN);
         curIndex = constantVariation.length - 1;
+        var classificationString = "";
+        classifications.map((x) => {
+            classificationString = classificationString.concat("<span class='badge badge-primary'>" + x + "</span> <span> </span>")
+            console.log(classificationString)
+        })
+        console.log(classificationString)
+        document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span class='badge badge-primary'>+</span>";
+        document.getElementById("classifications").style.visibility = "visible"
         clearInterval(timerVar);
     }
     updateStatus();

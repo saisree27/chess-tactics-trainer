@@ -1,5 +1,5 @@
 from django import forms
-from .models import Player
+from .models import Player, Tactic
 from django.http import JsonResponse
 from django.core import serializers
 from django.contrib import messages
@@ -9,13 +9,48 @@ from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password, ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from stockfish import Stockfish
+import json
 import chess
 import pickle
 import random
 
-tactics_dict = {}
-with open('ChessTacticsTrainer/static/assets/trying_again_july_2019.obj', 'rb') as f:
-    tactics_dict = pickle.load(f)
+def update_tactics():
+    tactics_dict = {}
+    with open('ChessTacticsTrainer/static/assets/JULY 2019 FINAL WITH CLASSIFICATIONS.obj', 'rb') as f:
+        tactics_dict = pickle.load(f)
+
+    for num in tactics_dict:
+        print(num, end="\r")
+        tactic = tactics_dict[num]
+        try:
+            new_tactic = Tactic.objects.get(position=tactic[1])
+            print("Tactic position exists. Updating values.")
+            if new_tactic.evaluation_before != tactic[2]:
+                print("Updating evaluation before.")
+                new_tactic.evaluation_before = tactic[2]
+            if new_tactic.evaluation_after != tactic[3]:
+                print("Updating evaluation after.")
+                new_tactic.evaluation_after = tactic[3]
+            if new_tactic.best_move != tactic[4]:
+                print("Updating best move.")
+            if new_tactic.variation != json.dumps(tactic[5]):
+                print("Updating variation.")
+            if new_tactic.classifications != json.dumps(list(tactic[6])):
+                print("Updating classifications.")
+        except Tactic.DoesNotExist:
+            print("Creating new tactic")
+            print(list(tactic[6]))
+            new_tactic = Tactic(position=tactic[1], side_to_move=tactic[0].turn, evaluation_before=tactic[2], evaluation_after=tactic[3],
+                                best_move=tactic[4], variation=json.dumps(tactic[5]), classifications=json.dumps(list(tactic[6])))
+            # new_tactic.side_to_move = tactic[0].turn
+            # new_tactic.evaluation_before = tactic[2] 
+            # new_tactic.evaluation_after = tactic[3]
+            # new_tactic.best_move = tactic[4]
+            # new_tactic.variation = json.dumps(tactic[5])
+            # new_tactic.classifications = json.dumps(list(tactic[6]))
+            new_tactic.save()
+
+
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
@@ -57,13 +92,14 @@ def stockfish_reply(request):
         
 def send_tactic(request):
     if request.is_ajax and request.method == "POST":
-        tactic = random.choice(list(tactics_dict.values()))
+        tactic = random.choice(Tactic.objects.all())
         data = {
             'tactic': {
-                'turn': tactic[0].turn,
-                'fen': tactic[1],
-                'bestmove': tactic[4],
-                'variation': tactic[5]
+                'turn': tactic.side_to_move,
+                'fen': tactic.position,
+                'bestmove': tactic.best_move,
+                'variation': tactic.get_variation(),
+                'classifications': tactic.get_classifications()
             }
         }
         print("sent tactic")
@@ -264,3 +300,5 @@ def update(request):
                 player.total_tactics_incorrect += 1
             player.save()
     return JsonResponse({})
+
+# update_tactics()
