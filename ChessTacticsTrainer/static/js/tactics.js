@@ -18,6 +18,93 @@ var timerVar;
 var totalSeconds = 0;
 var originalFEN = '';
 
+$('#update-class-form').submit(function(event) {
+    event.preventDefault();
+    var $form = $(this)
+    var url = $form.attr('action');
+
+    var posting = $.post(url, {
+        fen: $('#update-class-fen').val(),
+        addclass: $('#addclass').val()
+    })
+
+    posting.done(function(response) {
+        document.getElementById('update-class-result').innerHTML = response.message;
+        if(response.message == "Classifications updated!") {
+            classifications = response.new_classifications;
+            var classificationString = "";
+            classifications.map((x) => {
+                classificationString = classificationString.concat("<span class='badge badge-primary'>" + x + "</span> <span> </span>")
+                console.log(classificationString)
+            })
+            console.log(classificationString)
+            document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary' style='cursor: pointer;'>+</span>";
+            document.getElementById("classifications").style.visibility = "visible"
+            var btn = document.getElementById("addclassification");
+            btn.onclick = function() {
+                modal.style.display = "block";
+            }
+        }
+    });
+
+    posting.fail(function(data) {
+        document.getElementById('update-class-result').innerHTML = "Request failed.";
+    });
+
+});
+
+$('#remove-class-form').submit(function(event) {
+    event.preventDefault();
+    var $form = $(this)
+    var url = $form.attr('action');
+
+    var posting = $.post(url, {
+        fen: $('#remove-class-fen').val(),
+        removeclass: $('#removeclass').val()
+    })
+
+    posting.done(function(response) {
+        document.getElementById('remove-class-result').innerHTML = response.message;
+        if(response.message == "Classification removed!") {
+            classifications = response.new_classifications;
+            var classificationString = "";
+            classifications.map((x) => {
+                classificationString = classificationString.concat("<span class='badge badge-primary'>" + x + "</span> <span> </span>")
+                console.log(classificationString)
+            })
+            console.log(classificationString)
+            document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary' style='cursor: pointer;'>+</span>";
+            document.getElementById("classifications").style.visibility = "visible"
+            var btn = document.getElementById("addclassification");
+            btn.onclick = function() {
+                modal.style.display = "block";
+            }
+        }
+    });
+
+    posting.fail(function(data) {
+        document.getElementById('update-class-result').innerHTML = "Request failed.";
+    });
+
+});
+
+var modal = document.getElementById("myModal");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+} 
+
 function getTactic() {
     var message = document.getElementById('message');
     if(message != null) {
@@ -63,6 +150,8 @@ function displayTactic(tactic) {
     constantVariation = JSON.parse(JSON.stringify(tactic.variation));
     classifications = tactic.classifications;
     document.getElementById("classifications").style.visibility = "hidden"
+    document.getElementById("update-class-fen").value = game.fen();
+    document.getElementById("remove-class-fen").value = game.fen();
     curIndex = -1; // no moves made yet in the variation
     tempIndex = -1; // no moves made yet in the variation
     curTactic = tactic;
@@ -337,8 +426,12 @@ function onDrop(source, target) {
                 console.log(classificationString)
             })
             console.log(classificationString)
-            document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span class='badge badge-primary'>+</span>";
+            document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary' style='cursor: pointer;'>+</span>";
             document.getElementById("classifications").style.visibility = "visible"
+            var btn = document.getElementById("addclassification");
+            btn.onclick = function() {
+                modal.style.display = "block";
+            }
             clearInterval(timerVar);
         }
     } else {
@@ -355,8 +448,12 @@ function onDrop(source, target) {
             console.log(classificationString)
         })
         console.log(classificationString)
-        document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span class='badge badge-primary'>+</span>";
+        document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary button'  style='cursor: pointer;'>+</span>";
         document.getElementById("classifications").style.visibility = "visible"
+        var btn = document.getElementById("addclassification");
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
         clearInterval(timerVar);
     }
     updateStatus();

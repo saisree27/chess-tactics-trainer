@@ -14,6 +14,7 @@ urlpatterns = [
     path('start-training', views.start_training),
     path('start-training-no-auth', views.start_training_no_auth),
     path('update', views.update),
+    path('update-classifications', views.update_classifications),
     path('progress', views.progress),
     path('settings', views.settings),
     path('logout', views.submit_logout),

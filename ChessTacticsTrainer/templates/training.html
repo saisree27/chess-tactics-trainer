@@ -28,6 +28,45 @@ crossorigin="anonymous"></script>
     .highlight-black {
       background-color: rgb(107, 107, 221);
     }
+
+    /* The Modal (background) */
+    .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 75%; /* Could be more or less, depending on screen size */
+    }
+
+    /* The Close Button */
+    .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    } 
+
 </style>
 {% else %}
 <style type="text/css">
@@ -67,6 +106,98 @@ crossorigin="anonymous"></script>
     })
 </script>
 <body>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+          <div class="row vertical-divider" style="margin-top: 15px">
+            <div class="col-xs-6" style="margin-left: 10px">
+                <h1 style='color:black'>New Classification</h1>
+                <p>Do you think there should be an additional tactical motif added to this list?</p>
+                <p>If so, please select one from the dropdown: </p>
+                <form id="update-class-form" class="form-inline" action="/update-classifications">
+                  {% csrf_token %}
+                  <input id='update-class-fen' type='hidden' name='fen' value=''/>
+                  <select id='addclass' name="addclass" class="custom-select form-control" style="margin-right: 10px">
+                      <option value='ATTACKING F2/F7'>Attacking f2/f7</option>
+                      <option value='BACK RANK'>Back rank</option>
+                      <option value='CHECKMATE'>Checkmate</option>
+                      <option value='CLEARANCE SACRIFICE'>Clearance Sacrifice</option>
+                      <option value='DEFLECTION'>Deflection</option>
+                      <option value='DEFENSE'>Defense</option>
+                      <option value='DESPERADO'>Desperado</option>
+                      <option value='DISCOVERED ATTACK'>Discovered Attack</option>
+                      <option value='DISCOVERED CHECK'>Discovered Check</option>
+                      <option value='ENDGAME TACTIC'>Endgame Tactic</option>
+                      <option value='FORK'>Fork</option>
+                      <option value='HANGING PIECE'>Hanging Piece</option>
+                      <option value='INTERFERENCE'>Interference</option>
+                      <option value='MATING NET'>Mating Net</option>
+                      <option value='OVERLOADING'>Overloading</option>
+                      <option value='PROMOTION'>Promotion</option>
+                      <option value='PERPETUAl CHECK'>Perpetual Check</option>
+                      <option value='PIN'>Pin</option>
+                      <option value='REMOVE THE DEFENDER'>Remove the Defender</option>
+                      <option value='SACRIFICE'>Sacrifice</option>
+                      <option value='SIMPLIFICATION'>Simplification</option>
+                      <option value='SKEWER'>Skewer</option>
+                      <option value='STALEMATE'>Stalemate</option>
+                      <option value='TRAPPED PIECE'>Trapped Piece</option>
+                      <option value='UNDERPROMOTION'>Underpromotion</option>
+                      <option value='WINDMILL'>Windmill</option>
+                      <option value='X-RAY ATTACK'>X-Ray Attack</option>
+                      <option value='ZUGZWANG'>Zugzwang</option>
+                  </select>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <p id="update-class-result"></p>
+            </div>
+            <div class="col-xs-6" style="margin-left: 15px">
+                <h1 style='color:black'>Remove Classification</h1>
+                <p>Do you think a tactical motif should be removed from this list?</p>
+                <p>If so, please select one from the dropdown: </p>
+                <form id="remove-class-form" class="form-inline" action="/update-classifications">
+                  {% csrf_token %}
+                  <input id='remove-class-fen' type='hidden' name='fen' value=''/>
+                  <select id='removeclass' name="removeclass" class="custom-select form-control" style="margin-right: 10px">
+                      <option value='ATTACKING F2/F7'>Attacking f2/f7</option>
+                      <option value='BACK RANK'>Back rank</option>
+                      <option value='CHECKMATE'>Checkmate</option>
+                      <option value='CLEARANCE SACRIFICE'>Clearance Sacrifice</option>
+                      <option value='DEFLECTION'>Deflection</option>
+                      <option value='DEFENSE'>Defense</option>
+                      <option value='DESPERADO'>Desperado</option>
+                      <option value='DISCOVERED ATTACK'>Discovered Attack</option>
+                      <option value='DISCOVERED CHECK'>Discovered Check</option>
+                      <option value='ENDGAME TACTIC'>Endgame Tactic</option>
+                      <option value='FORK'>Fork</option>
+                      <option value='HANGING PIECE'>Hanging Piece</option>
+                      <option value='INTERFERENCE'>Interference</option>
+                      <option value='MATING NET'>Mating Net</option>
+                      <option value='OVERLOADING'>Overloading</option>
+                      <option value='PROMOTION'>Promotion</option>
+                      <option value='PERPETUAl CHECK'>Perpetual Check</option>
+                      <option value='PIN'>Pin</option>
+                      <option value='REMOVE THE DEFENDER'>Remove the Defender</option>
+                      <option value='SACRIFICE'>Sacrifice</option>
+                      <option value='SIMPLIFICATION'>Simplification</option>
+                      <option value='SKEWER'>Skewer</option>
+                      <option value='STALEMATE'>Stalemate</option>
+                      <option value='TRAPPED PIECE'>Trapped Piece</option>
+                      <option value='UNDERPROMOTION'>Underpromotion</option>
+                      <option value='WINDMILL'>Windmill</option>
+                      <option value='X-RAY ATTACK'>X-Ray Attack</option>
+                      <option value='ZUGZWANG'>Zugzwang</option>
+                  </select>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <p id="remove-class-result"></p>
+            </div>
+          </div>
+        </div>
+      
+    </div>
     <div>
         <div>
             <div style="display: flex; height: 795px;">

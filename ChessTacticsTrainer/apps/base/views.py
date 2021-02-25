@@ -301,4 +301,34 @@ def update(request):
             player.save()
     return JsonResponse({})
 
+def update_classifications(request):
+    if request.method == "POST":
+        if "addclass" in request.POST:
+            tactic = Tactic.objects.get(position=request.POST.get("fen"))
+            classifications = list(tactic.get_classifications().copy())
+            if request.POST.get("addclass") in classifications:
+                return JsonResponse({"message": "Classification is already present!"})
+            else:
+                classifications.append(request.POST.get("addclass"))
+                tactic.set_classifications(classifications)
+                tactic.save()
+                return JsonResponse(
+                    {"message": "Classifications updated!", 
+                    "new_classifications": list(tactic.get_classifications())}
+                )
+        if "removeclass" in request.POST:
+            tactic = Tactic.objects.get(position=request.POST.get("fen"))
+            classifications = list(tactic.get_classifications().copy())
+            if request.POST.get("removeclass") in classifications:
+                classifications.remove(request.POST.get("removeclass"))
+                tactic.set_classifications(classifications)
+                tactic.save()
+                return JsonResponse({"message": "Classification removed!",
+                                     "new_classifications": list(tactic.get_classifications())}
+                                     )
+            else:
+                return JsonResponse(
+                    {"message": "Classification not present!"}
+                )
+    return JsonResponse({"message": "not a POST request!"})
 # update_tactics()
