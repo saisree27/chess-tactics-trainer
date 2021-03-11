@@ -17,6 +17,9 @@ var classifications = '';
 var timerVar;
 var totalSeconds = 0;
 var originalFEN = '';
+var promoting = false;
+var promotion_piece = null;
+var move = '';
 
 $('#update-class-form').submit(function(event) {
     event.preventDefault();
@@ -89,13 +92,52 @@ $('#remove-class-form').submit(function(event) {
 });
 
 var modal = document.getElementById("myModal");
+var promotionModal = document.getElementById("promotion-dialog");
 
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
+var spanPromotion = document.getElementsByClassName("closePromotion")[0];
 
+var promotionQueen = document.getElementById("promoteQueen");
+var promotionRook = document.getElementById("promoteRook");
+var promotionBishop = document.getElementById("promoteBishop");
+var promotionKnight = document.getElementById("promoteKnight");
+
+promotionQueen.onclick = function() {
+    promotionModal.style.display = "none";
+    promotion_piece = "q";
+    move.promotion = promotion_piece;
+    moveAndUpdateTactic(move);
+}
+
+promotionRook.onclick = function() {
+    promotionModal.style.display = "none";
+    promotion_piece = "r";
+    move.promotion = promotion_piece;
+    moveAndUpdateTactic(move);
+}
+
+promotionBishop.onclick = function() {
+    promotionModal.style.display = "none";
+    promotion_piece = "b";
+    move.promotion = promotion_piece;
+    moveAndUpdateTactic(move);
+}
+
+promotionKnight.onclick = function() {
+    promotionModal.style.display = "none";
+    promotion_piece = "n";
+    move.promotion = promotion_piece;
+    moveAndUpdateTactic(move);
+}
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
 modal.style.display = "none";
+}
+
+spanPromotion.onclick = function() {
+    promotionModal.style.display = "none";
+    promoting = false;
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -137,6 +179,7 @@ function getTactic() {
 function displayTactic(tactic) {
     console.log(tactic);
     game = new Chess(tactic.fen)
+    // game = new Chess('1nbqkbnr/Ppppp1pp/8/8/8/8/1PPPPPPP/RNBQKBNR w KQk - 0 1')
     if(tactic.turn) {
         //white to move
         board.orientation('white');
@@ -363,21 +406,32 @@ function respond() {
     updateStatus();
 }
 
-function onDrop(source, target) {
-    // see if the move is legal
-    var move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q' // NOTE: always promote to a queen for example simplicity
-    })
-                
-    
+function getImgSrc(piece) {
+    var piecetype = 'static/img/chesspieces' + document.getElementById('piecetype').className;
+    return piecetype.replace('{piece}', game.turn() + piece.toLocaleUpperCase());
+}
+
+
+var onDialogClose = function() {
+    // console.log(promote_to);
+    move.promotion = promote_to;
+    console.log(move);
+    moveAndUpdateTactic(move);
+}
+
+function moveAndUpdateTactic(move) {
+    console.log(move);
+    var result = game.move(move);
+    var source = move.from;
+    var target = move.to;
+
+    console.log(source + target);
     // $board.find('.' + squareClass).removeClass('highlight-white')
     // $board.find('.square-' + move.from).addClass('highlight-white')
     // squareToHighlight = target
     // colorToHighlight = 'white'
     // illegal move
-    if (move === null) return 'snapback';
+    if (result === null) return 'snapback';
 
     if(game.turn() == 'w') {
         //black just moved
@@ -393,10 +447,14 @@ function onDrop(source, target) {
         $board.find('.square-' + target).addClass('highlight-white')
     }
     
+    if(promoting) board.position(game.fen());
+
     var message = document.getElementById('message');
     if(message != null) {
         document.getElementById('message').remove();
     }
+
+    updateStatus();
 
     curIndex++;
     tempIndex++;
@@ -456,7 +514,42 @@ function onDrop(source, target) {
         }
         clearInterval(timerVar);
     }
-    updateStatus();
+    
+}
+
+
+function onDrop(source, target) {
+    // see if the move is legal
+    move = {
+        from: source,
+        to: target,
+        promotion: 'q'
+    }
+
+    var result = game.move(move);
+
+    if(result === null) return 'snapback';
+    else game.undo();
+                
+    var source_rank = source.substring(2,1);
+    var target_rank = target.substring(2,1);
+    var piece = game.get(source).type;
+
+    if (piece === 'p' && ((source_rank === '7' && target_rank === '8') || (source_rank === '2' && target_rank === '1'))) {
+         promoting = true;
+
+        // // get piece images
+        $('.promotion-piece-q').attr('src', getImgSrc('q'));
+        $('.promotion-piece-r').attr('src', getImgSrc('r'));
+        $('.promotion-piece-n').attr('src', getImgSrc('n'));
+        $('.promotion-piece-b').attr('src', getImgSrc('b'));
+
+        promotionModal.style.display = "block";
+        //the actual move is made after the piece to promote to
+        //has been selected, in the stop event of the promotion piece selectable
+        return;
+    }
+    moveAndUpdateTactic(move);
 }
 
 // update the board position after the piece snap
@@ -466,6 +559,7 @@ function onSnapEnd() {
 }
 
 function updateStatus() {
+    promoting = false;
     var status = '';
 
     var moveColor = 'White';

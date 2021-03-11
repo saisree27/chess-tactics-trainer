@@ -16,7 +16,7 @@ import random
 
 def update_tactics():
     tactics_dict = {}
-    with open('ChessTacticsTrainer/static/assets/JULY 2019 FINAL WITH CLASSIFICATIONS.obj', 'rb') as f:
+    with open('ChessTacticsTrainer/static/assets/JULY 2016 FINAL WITH CLASSIFICATIONS.obj', 'rb') as f:
         tactics_dict = pickle.load(f)
 
     for num in tactics_dict:

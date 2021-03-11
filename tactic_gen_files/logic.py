@@ -36,7 +36,7 @@ def check_for_best_move(board, verbose=False):
     for mv in board.legal_moves:
         copy = board.copy()
         copy.push(mv)
-        info = engine.analyse(copy, chess.engine.Limit(depth=11))
+        info = engine.analyse(copy, chess.engine.Limit(depth=12))
         evaluation = info["score"].white().score(mate_score=MATE_SCORE)
         list_evals.append(evaluation)
 
@@ -75,6 +75,6 @@ def check_for_best_move(board, verbose=False):
     if diff >= 400:
         return abs(new_list[1]) <= 200
     if diff >= 250:
-        return abs(new_list[1]) <= 50
+        return abs(new_list[1]) <= 100
 
     return False

@@ -96,6 +96,8 @@ def hanging_piece(board, fen, eval_before_move, eval_after_move, best_move, vari
             if not temp.is_attacked_by(color_to_check, chess.Move.from_uci(move).to_square):
                 if symbol_to_value[piece_captured.symbol().lower()] >= 3:
                     return True
+            if symbol_to_value[piece_captured.symbol().lower()] > symbol_to_value[piece_moved.symbol().lower()]:
+                return True
         temp.push(chess.Move.from_uci(move))
     
     return False
@@ -326,10 +328,10 @@ def classify_tactics(filename):
             tactics_with_classifications[num] = (board, fen, eval_before_move, eval_after_move, best_move, variation, classification)
             
             # print(classification)
-    handler = open('JULY 2019 FINAL WITH CLASSIFICATIONS.obj', 'wb')
+    handler = open('JULY 2016 FINAL WITH CLASSIFICATIONS.obj', 'wb')
     pickle.dump(tactics_with_classifications, handler)
     handler.close()
 # board = chess.Board("r1bq1rk1/ppppbpp1/2n2n1p/4p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 7")
 # print(check_back_rank_possibility(board, board.turn))
 
-classify_tactics("JULY 2019 FINAL (TO BE CLASSIFIED).obj")
+classify_tactics("JULY 2016 FINAL (TO BE CLASSIFIED).obj")

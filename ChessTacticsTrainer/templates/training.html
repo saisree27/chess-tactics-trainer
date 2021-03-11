@@ -52,6 +52,15 @@ crossorigin="anonymous"></script>
     width: 75%; /* Could be more or less, depending on screen size */
     }
 
+    .modal-promotion-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%; /* Could be more or less, depending on screen size */
+    border-radius: 5px;
+    }
+
     /* The Close Button */
     .close {
     color: #aaa;
@@ -62,6 +71,20 @@ crossorigin="anonymous"></script>
 
     .close:hover,
     .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    } 
+
+    .closePromotion {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    }
+
+    .closePromotion:hover,
+    .closePromotion:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -197,6 +220,17 @@ crossorigin="anonymous"></script>
           </div>
         </div>
       
+    </div>
+    <div id="promotion-dialog" class="modal">
+        <div class="modal-promotion-content">
+            <span class="closePromotion" style='cursor: pointer;'>&times;</span>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button id='promoteQueen' type="button" class="btn btn-outline-primary"><span class="piece-name"></span><img class="promotion-piece-q promotion-piece"/></button>
+                <button id='promoteRook' type="button" class="btn btn-outline-primary"><span class="piece-name"></span><img class="promotion-piece-r promotion-piece"/></button>
+                <button id='promoteKnight' type="button" class="btn btn-outline-primary"><span class="piece-name"></span><img class="promotion-piece-n promotion-piece"/></button>
+                <button id='promoteBishop' type="button" class="btn btn-outline-primary"><span class="piece-name"></span><img class="promotion-piece-b promotion-piece"/></button>
+            </div>
+        </div>
     </div>
     <div>
         <div>
