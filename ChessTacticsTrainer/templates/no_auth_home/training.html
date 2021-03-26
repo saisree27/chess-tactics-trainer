@@ -234,8 +234,8 @@ crossorigin="anonymous"></script>
     </div>
     <div>
         <div>
-            <div style="display: flex; height: 795px;">
-                <div style="width: 40%; margin-left: 10px; margin-right: 20px; clear:both">
+            <div style="display: flex;">
+                <div style="width: min(70vh, 40vw); margin-left: 10px; margin-right: 20px; clear:both; flex-shrink: 0">
                     <div id="myBoard"></div>
                     <div style="text-align: center">
                         <button id="begin" class="btn btn-primary" style="margin-top: 10px"  disabled onClick="begin()"><<</button>
@@ -247,11 +247,14 @@ crossorigin="anonymous"></script>
                 
     
                 {% if darkmode %}
-                <div class="shadow-lg jumbotron jumbotron-fluid bg-dark text-white" style="flex-grow: 1; margin-right:10px">
+                <div class="shadow-lg jumbotron jumbotron-fluid bg-dark text-white" style="flex: 1; margin-right:10px; height: 80vh; padding-top: 20px;">
                 {% else %}
-                <div class="shadow-lg jumbotron jumbotron-fluid" style="flex-grow: 1; margin-right:10px">
+                <div class="shadow-lg jumbotron jumbotron-fluid" style="flex: 1; margin-right:10px; height: 80vh; padding-top: 20px;">
                 {% endif %}
-                    <div id="info" class="container" style="font-size: 20px; position:absolute;">
+                    <div id="info" class="container" style="font-size: 20px;">
+                        <div style="text-align: center; padding-bottom: 10px">
+                            <button id="start" class="btn btn-outline-primary" onclick="getTactic()" style="font-size: 50px; vertical-align: bottom;">Start Solving</button>
+                        </div>
                         <h3> Game Information </h3>
                         <p id="status"></p>
                         <p id="fen"></p>
@@ -259,11 +262,7 @@ crossorigin="anonymous"></script>
                         <p id="timer"><strong>Time Spent: </strong>00:00:00</p>
                         <p id="classifications_no_auth" style="visibility: hidden;"><strong>Classifications:</strong> You must login to see this!</p>
                         <div style="text-align: center;">
-                            <iframe id="analysis_board" width="500px" height="300px" style="border:none;"></iframe>
-                        </div>
-                        <div style="position: absolute; text-align: center; left: 0%; right: 0%; bottom:-80px;">
-                            
-                            <button id="start" class="btn btn-outline-primary" onclick="getTactic()" style="font-size: 50px; vertical-align: bottom;">Start Solving</button>
+                            <iframe id="analysis_board" style="border:none; width: 35vw; height: 30vh;"></iframe>
                         </div>
                         <br>
                     </div>
