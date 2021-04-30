@@ -1,4 +1,6 @@
 import chess
+import chess.engine
+from chess.engine import Limit, SimpleEngine
 import tree
 from tree import MeaningfulSearchTree, Node
 import numpy as np
@@ -85,7 +87,38 @@ def seemingly_good(tree):
     '''
     Number of non-winning first moves that only have one good answer
     '''
-    
+    count = 0
+    engine = SimpleEngine.popen_uci("../../ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe")
+    for node in tree.node_list:
+        if node.depth == 0:
+            board = chess.Board(node.fen)                     
+            for move in board.legal_moves:
+                seemingly_good = True
+                board.push(move)
+
+                cur_evaluation = engine.analyse(board, Limit(depth=10))["score"].white().score(mate_score=1000000)
+
+                if abs(cur_evaluation) > 150:
+                    seemingly_good = False
+
+                best_reply = engine.play(board, Limit(depth=10)).move
+                board.push(best_reply)
+                best_evaluation = engine.analyse(board, Limit(depth=10))["score"].white().score(mate_score=1000000)
+                board.pop()
+
+                for reply in board.legal_moves:
+                    board.push(reply)
+                    evaluation = engine.analyse(board, Limit(depth=10))["score"].white().score(mate_score=1000000)
+
+                    if abs(best_evaluation - evaluation) < 50 and str(reply) != str(best_reply):
+                        seemingly_good = False
+                    
+                    board.pop()
+                board.pop()
+
+                if seemingly_good:
+                    count += 1
+    return count
 
 def distance(tree, level):
     '''
@@ -152,6 +185,8 @@ def get_all_heuristics(tree, depth):
     i = [move_ratio(tree, d) for d in range(1, depth + 1)]
     for x in range(depth + 1, 6):
         i.append(0)
+    j = [seemingly_good(tree)]
 
-    heuristics = a + b + c + d + e + f + g + h + i
+    heuristics = a + b + c + d + e + f + g + h + i + j
+    
     return np.array(heuristics)

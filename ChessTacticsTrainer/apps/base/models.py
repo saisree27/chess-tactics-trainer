@@ -24,6 +24,7 @@ class Tactic(models.Model):
     classifications = models.TextField(verbose_name="Classifications (JSON-serialized)")
     rating = models.FloatField(verbose_name="Difficulty rating", default=1500)
     side_to_move = models.IntegerField(verbose_name="Side to move")
+    source_set = models.CharField(verbose_name="Source file", default="No update", max_length=1000)
 
     def set_variation(self, variation):
         self.variation = json.dumps(variation)

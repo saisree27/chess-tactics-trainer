@@ -13,6 +13,16 @@ import json
 import chess
 import pickle
 import random
+from itertools import chain
+
+def update_ratings(filename):
+    ratings_dict = pickle.load(open(filename, 'rb'))
+    for num in ratings_dict:
+        position, variation, classification, rating = ratings_dict[num]
+        tactic = Tactic.objects.get(position=position)
+        tactic.rating = rating
+        tactic.source_set = filename
+        tactic.save()
 
 def update_tactics():
     tactics_dict = {}
@@ -91,15 +101,24 @@ def stockfish_reply(request):
         return JsonResponse({})
         
 def send_tactic(request):
+    rated_tactics = ['ChessTacticsTrainer/static/assets/july2016_with_c_r_first_800_2', 'ChessTacticsTrainer/static/assets/july2016_with_c_r_second_800_2', 'ChessTacticsTrainer/static/assets/july2016_with_c_r_third_800_2']
     if request.is_ajax and request.method == "POST":
-        tactic = random.choice(Tactic.objects.all())
+        
+        results = []
+        for filename in rated_tactics:
+            result = Tactic.objects.filter(source_set=filename)
+            results.append(result)
+        final = list(chain(*results))
+
+        tactic = random.choice(final)
         data = {
             'tactic': {
                 'turn': tactic.side_to_move,
                 'fen': tactic.position,
                 'bestmove': tactic.best_move,
                 'variation': tactic.get_variation(),
-                'classifications': tactic.get_classifications()
+                'classifications': tactic.get_classifications(),
+                'rating': tactic.rating
             }
         }
         print("sent tactic")
@@ -332,3 +351,5 @@ def update_classifications(request):
                 )
     return JsonResponse({"message": "not a POST request!"})
 # update_tactics()
+
+# update_ratings('ChessTacticsTrainer/static/assets/july2016_with_c_r_third_800_2')

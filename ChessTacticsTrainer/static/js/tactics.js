@@ -14,6 +14,7 @@ var curIndex = 0;
 var tempIndex = 0;
 var curTactic = '';
 var classifications = '';
+var rating = 0;
 var timerVar;
 var totalSeconds = 0;
 var originalFEN = '';
@@ -192,7 +193,9 @@ function displayTactic(tactic) {
     variation = tactic.variation;
     constantVariation = JSON.parse(JSON.stringify(tactic.variation));
     classifications = tactic.classifications;
+    rating = tactic.rating.toFixed(2);
     document.getElementById("classifications").style.visibility = "hidden"
+    document.getElementById("rating").style.visibility = "hidden"
     document.getElementById("update-class-fen").value = game.fen();
     document.getElementById("remove-class-fen").value = game.fen();
     curIndex = -1; // no moves made yet in the variation
@@ -486,6 +489,8 @@ function moveAndUpdateTactic(move) {
             console.log(classificationString)
             document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary' style='cursor: pointer;'>+</span>";
             document.getElementById("classifications").style.visibility = "visible"
+            document.getElementById('rating').innerHTML = "<strong>Rating: </strong>" + rating
+            document.getElementById('rating').style.visibility = 'visible'
             var btn = document.getElementById("addclassification");
             btn.onclick = function() {
                 modal.style.display = "block";
@@ -508,6 +513,8 @@ function moveAndUpdateTactic(move) {
         console.log(classificationString)
         document.getElementById('classifications').innerHTML = "<strong>Classifications: </strong>" + classificationString + "<span> </span>" + "<span id='addclassification' class='badge badge-primary button'  style='cursor: pointer;'>+</span>";
         document.getElementById("classifications").style.visibility = "visible"
+        document.getElementById('rating').innerHTML = "<strong>Rating: </strong>" + rating
+        document.getElementById('rating').style.visibility = 'visible'
         var btn = document.getElementById("addclassification");
         btn.onclick = function() {
             modal.style.display = "block";

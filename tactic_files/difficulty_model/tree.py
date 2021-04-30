@@ -5,6 +5,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pickle
 
+engine = SimpleEngine.popen_uci("../../ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe")
+
 
 class Node():
     def __init__(self, fen, move=None, evaluation=None, depth=0, root=False):
@@ -59,8 +61,6 @@ class MeaningfulSearchTree():
         self.node_list.append(final_tree)
 
         board = chess.Board(fen)
-        engine = SimpleEngine.popen_uci("../../ChessTacticsTrainer/static/assets/stockfish/stockfish_20090216_x64_bmi2.exe")
-
         board.push_uci(variation[0])
         evaluation = self.get_evaluation(engine, board)
 
