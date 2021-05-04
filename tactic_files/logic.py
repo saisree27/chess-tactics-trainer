@@ -32,6 +32,7 @@ def puzzle(old, new):
 
 def check_for_best_move(board, verbose=False):
     list_evals = []
+    list_moves = {}
 
     for mv in board.legal_moves:
         copy = board.copy()
@@ -39,6 +40,8 @@ def check_for_best_move(board, verbose=False):
         info = engine.analyse(copy, chess.engine.Limit(depth=12))
         evaluation = info["score"].white().score(mate_score=MATE_SCORE)
         list_evals.append(evaluation)
+        list_moves[evaluation] = mv
+
 
     new_list = list(sorted(list_evals))
     # print(new_list)
@@ -52,29 +55,29 @@ def check_for_best_move(board, verbose=False):
 
     if len(new_list) <= 3:
         # side is in check, which is not the ideal start to a tactic
-        return False
+        return list_moves[new_list[0]], False
     
     diff = abs(new_list[0] - new_list[1]) 
     # print(diff, new_list[0], new_list[1])
 
     if new_list[0] * new_list[1] <= 0:
-        return diff > 300
+        return list_moves[new_list[0]], diff > 300
     
     if new_list[0] >= 999900:
-        return new_list[0] > new_list[1]
+        return list_moves[new_list[0]], new_list[0] > new_list[1]
 
     if diff >= 10000:
         # mating move
-        return abs(new_list[1]) <= 1000
+        return list_moves[new_list[0]], abs(new_list[1]) <= 1000
     if diff >= 800:
-        return abs(new_list[1]) <= 450
+        return list_moves[new_list[0]], abs(new_list[1]) <= 450
     if diff >= 600:
-        return abs(new_list[1]) <= 400
+        return list_moves[new_list[0]], abs(new_list[1]) <= 400
     if diff >= 500:
-        return abs(new_list[1]) <= 350
+        return list_moves[new_list[0]], abs(new_list[1]) <= 350
     if diff >= 400:
-        return abs(new_list[1]) <= 200
+        return list_moves[new_list[0]], abs(new_list[1]) <= 200
     if diff >= 250:
-        return abs(new_list[1]) <= 100
+        return list_moves[new_list[0]], abs(new_list[1]) <= 100
 
-    return False
+    return list_moves[new_list[0]], False

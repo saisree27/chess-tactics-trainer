@@ -353,3 +353,14 @@ def update_classifications(request):
 # update_tactics()
 
 # update_ratings('ChessTacticsTrainer/static/assets/july2016_with_c_r_third_800_2')
+print(len(Tactic.objects.all()))
+variation_lengths = {}
+
+for tactic in list(Tactic.objects.all()):
+    length = len(tactic.get_variation())
+    if length not in variation_lengths:
+        variation_lengths[length] = 1
+    else:
+        variation_lengths[length] += 1
+
+print(variation_lengths)
