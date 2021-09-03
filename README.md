@@ -4,13 +4,13 @@ This is a (WIP) personalized chess tactical training web application for profess
 
 ## Screenshots
 Training Page:
-![](https://drive.google.com/uc?export=view&id=1khUG7aJlPfrHufwnj7seEgkD5Ku_xpzX)
+![Training Page](https://drive.google.com/uc?export=view&id=1khUG7aJlPfrHufwnj7seEgkD5Ku_xpzX)
 
 Home Page:
-![](https://drive.google.com/uc?export=view&id=1d2QpYlR39lqwLF1P09XWIkEy8RwtctzG)
+![Home Page](https://drive.google.com/uc?export=view&id=1d2QpYlR39lqwLF1P09XWIkEy8RwtctzG)
 
 Dark Mode!
-![](https://drive.google.com/uc?export=view&id=1I4APQR-Uq0rhrtZi86H8Ps4FCsGevHKx)
+![Dark Mode](https://drive.google.com/uc?export=view&id=1I4APQR-Uq0rhrtZi86H8Ps4FCsGevHKx)
 
 
 
